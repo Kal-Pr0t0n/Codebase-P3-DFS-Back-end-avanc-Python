@@ -14,6 +14,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8.4,<9.0",
+    "pytest-cov>=7.1.0",
     "pytest-django>=4.11,<5.0",
     "ruff>=0.12,<1.0",
 ]
@@ -21,6 +22,28 @@ dev = [
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
+# Lance automatiquement la couverture sur l'application 'equipment' avec affichage des lignes manquantes et rapport HTML
+addopts = "--cov=equipment --cov-report=term-missing --cov-report=html"
+
+[tool.coverage.run]
+source = ["equipment"]
+branch = true  # Vérifie que les deux branches (True/False) des conditions sont testées
+omit = [
+    "*/migrations/*",  # Ignore les migrations auto-générées
+    "*/tests/*",       # Ignore les fichiers de test eux-mêmes
+]
+
+[tool.coverage.report]
+show_missing = true  # Affiche les numéros des lignes non couvertes dans le terminal
+skip_empty = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "def __repr__",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
 
 [tool.ruff]
 line-length = 100
