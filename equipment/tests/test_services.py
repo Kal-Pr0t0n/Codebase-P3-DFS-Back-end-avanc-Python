@@ -9,8 +9,10 @@ import pytest
 
 from ..models import Equipment
 from ..services import (
+    EquipmentAlreadyAvailableError,
     EquipmentNotFoundError,
     EquipmentService,
+    EquipmentUnavailableError,
 )
 
 
@@ -42,24 +44,33 @@ class TestEquipementService:
             assert result.name == 'MacBook Pro'
 
     @pytest.mark.parametrize(
-            ("equipment_id","is_available","username", "expectation", "expected_item"),
+            (
+                "equipment_id","is_available","username", 
+                "expectation", "expected_item"
+            ),
             [
                 (
                     1, False, ("Ducon","JAIPAYE"), 
-                    pytest.raises(NotImplementedError, match=None), None
+                    pytest.raises(
+                            EquipmentUnavailableError, 
+                            match="Cet équipement est déjà emprunté"
+                        ), None
                 ), 
                 (
                     1, True, ("Ducon","JAIPAYE"),  
-                    pytest.raises(NotImplementedError, match=None), sample_item
+                    does_not_raise(), sample_item
                 ),
             ]
         )
     def test_bowworw_equipment(
-                self, equipment_id, is_available, username, 
+                self, sample_item, equipment_id, is_available, username, 
                 expectation, expected_item
             ):
         """Vérifie la fonction : emprunter un équipement"""
         equipment_service = EquipmentService()
+        equipment = equipment_service.find_equipment(equipment_id=equipment_id)
+        equipment.is_available = is_available
+        equipment.save()
         with expectation:
             result = equipment_service.borrow_equipment(
                     equipment_id=equipment_id, 
@@ -67,29 +78,37 @@ class TestEquipementService:
                     last_name=username[1]
                 )
             assert result.name == 'MacBook Pro'
+            assert result.is_available != is_available
 
     @pytest.mark.parametrize(
             ("equipment_id","is_available", "expectation", "expected_item"),
             [
                 (
                     1, False, 
-                    pytest.raises(NotImplementedError, match=None), None
+                    does_not_raise(), sample_item
                 ), 
                 (
                     1, True,  
-                    pytest.raises(NotImplementedError, match=None), sample_item
+                    pytest.raises(
+                            EquipmentAlreadyAvailableError, 
+                            match="Cet équipement a déjà été retourné"
+                        ), None
                 ),
             ]
         )
     def test_return_equipment(
-                self, equipment_id, is_available, expectation, expected_item
+                self, sample_item,equipment_id, is_available, 
+                expectation, expected_item
             ):
         """Vérifie la fonction : retourner un équipement"""
         equipment_service = EquipmentService()
+        equipment = equipment_service.find_equipment(equipment_id=equipment_id)
+        equipment.is_available = is_available
+        equipment.save()
         with expectation:
             result = equipment_service.return_equipment(
                     equipment_id=equipment_id
                 )
             assert result.name == 'MacBook Pro'
+            assert result.is_available != is_available
     
-            

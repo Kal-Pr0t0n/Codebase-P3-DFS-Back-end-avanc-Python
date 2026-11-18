@@ -71,7 +71,7 @@ class BorrowRequestSerializer_quest(TestCase):
         )
         self.assertIn("last_name", serializer.errors)
 
-    def itest_blank_field_not_allowed(self):
+    def test_blank_field_not_allowed(self):
         """Vérifie que les champs vides ne sont pas acceptés"""
         invalid_data = {
             "first_name": "",

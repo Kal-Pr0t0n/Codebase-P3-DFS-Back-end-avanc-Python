@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils import timezone
 
 from .models import Equipment
 
@@ -20,12 +21,34 @@ class EquipmentService:
         try:
             return Equipment.objects.get(pk=equipment_id)
         except Equipment.DoesNotExist as exc:
-            raise EquipmentNotFoundError from exc
+            raise EquipmentNotFoundError("Equipement inexistant") from exc
 
     @transaction.atomic
-    def borrow_equipment(self, equipment_id: int, first_name: str, last_name: str) -> Equipment:
-        raise NotImplementedError
+    def borrow_equipment(
+            self, equipment_id: int, first_name: str, last_name: str
+        ) -> Equipment:
+        equipment = self.find_equipment(equipment_id=equipment_id)
+        if not equipment.is_available:  # Exemple de règle métier
+            raise EquipmentUnavailableError("Cet équipement est déjà emprunté")
+
+        equipment.borrower_first_name = first_name
+        equipment.borrower_last_name = last_name
+        equipment.borrowed_at = timezone.now()
+        equipment.returned_at = None
+        equipment.is_available = False
+        equipment.save()
+
+        return equipment
 
     @transaction.atomic
     def return_equipment(self, equipment_id: int) -> Equipment:
-        raise NotImplementedError
+        equipment = self.find_equipment(equipment_id=equipment_id)
+        if equipment.is_available :
+            raise EquipmentAlreadyAvailableError(
+                    "Cet équipement a déjà été retourné"
+                )
+        equipment.is_available = True
+        equipment.returned_at = timezone.now()
+        equipment.save()
+
+        return equipment
