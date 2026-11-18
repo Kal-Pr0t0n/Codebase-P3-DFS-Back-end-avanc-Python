@@ -1,0 +1,1 @@
+[33mWARNING [0m django.request:log.py:283 Method Not Allowed: /api/equipment/1/

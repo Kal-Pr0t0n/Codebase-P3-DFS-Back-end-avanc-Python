@@ -8,7 +8,6 @@ from .models import Equipment
 from .serializers import BorrowRequestSerializer, EquipmentSerializer
 from .services import EquipmentNotFoundError, EquipmentService, EquipmentUnavailableError
 
-
 class EquipmentListView(generics.ListAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
