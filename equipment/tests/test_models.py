@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from ..models import Equipment
 
+
 @allure.epic("Application EquipIT - Gestion du parc matériel")
 @allure.feature("Test Unitaires sur le Modèle de données")
 

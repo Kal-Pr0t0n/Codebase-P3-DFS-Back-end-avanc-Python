@@ -12,8 +12,6 @@ from rest_framework.test import APIClient
 
 from ..models import Equipment
 
-@allure.epic("Application EquipIT - Gestion du parc matériel")
-@allure.feature("API & Intégration des Endpoints")
 
 @pytest.fixture
 def api_client():
@@ -40,6 +38,8 @@ def sample_item(db):
     ]
 
 @pytest.mark.django_db
+@allure.epic("Application EquipIT - Gestion du parc matériel")
+@allure.feature("API & Intégration des Endpoints")
 class TestEquipementEndPoints:
 
     @allure.story("Récupération de la liste des Equipements")

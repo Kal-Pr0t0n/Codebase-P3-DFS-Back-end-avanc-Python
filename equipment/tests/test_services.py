@@ -3,9 +3,9 @@
 Test Unitaires sur les services : 
     - EquipmentService
 """
-import allure
 from contextlib import nullcontext as does_not_raise
 
+import allure
 import pytest
 
 from ..models import Equipment
@@ -15,9 +15,6 @@ from ..services import (
     EquipmentService,
     EquipmentUnavailableError,
 )
-
-@allure.epic("Application EquipIT - Gestion du parc matériel")
-@allure.feature("Test Unitaires sur les services")
 
 
 @pytest.fixture
@@ -30,6 +27,9 @@ def sample_item(db):
                 )
 
 @pytest.mark.django_db
+@allure.epic("Application EquipIT - Gestion du parc matériel")
+@allure.feature("Test Unitaires sur les services")
+
 class TestEquipementService:
     @allure.story("Fonctionnalité appliquées aux équipements")
     @allure.severity(allure.severity_level.BLOCKER)
